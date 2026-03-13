@@ -1,0 +1,317 @@
+[
+  {
+    "device_id": "wc_01",
+    "type_equipement": "wc",
+    "volume_l": 6.5,
+    "debit_l_min": 0.0,
+    "timestamp": "2026-02-07T08:15:00Z"
+  },
+  {
+    "device_id": "douche_01",
+    "type_equipement": "douche",
+    "volume_l": 45.2,
+    "debit_l_min": 7.5,
+    "timestamp": "2026-02-07T08:30:00Z"
+  },
+  {
+    "device_id": "cuisine_01",
+    "type_equipement": "cuisine",
+    "volume_l": 12.3,
+    "debit_l_min": 4.1,
+    "timestamp": "2026-02-07T09:00:00Z"
+  },
+  {
+    "device_id": "lave_vaisselle_01",
+    "type_equipement": "lave_vaisselle",
+    "volume_l": 15.8,
+    "debit_l_min": 2.6,
+    "timestamp": "2026-02-07T12:00:00Z"
+  },
+  {
+    "device_id": "wc_01",
+    "type_equipement": "wc",
+    "volume_l": 5.2,
+    "debit_l_min": 0.0,
+    "timestamp": "2026-02-07T14:20:00Z"
+  },
+  {
+    "device_id": "douche_01",
+    "type_equipement": "douche",
+    "volume_l": 38.7,
+    "debit_l_min": 6.5,
+    "timestamp": "2026-02-07T19:45:00Z"
+  },
+  {
+    "device_id": "jardin_01",
+    "type_equipement": "jardin",
+    "volume_l": 120.5,
+    "debit_l_min": 8.0,
+    "timestamp": "2026-02-07T20:00:00Z"
+  },
+  {
+    "device_id": "wc_01",
+    "type_equipement": "wc",
+    "volume_l": 6.0,
+    "debit_l_min": 0.0,
+    "timestamp": "2026-02-08T07:30:00Z"
+  },
+  {
+    "device_id": "douche_01",
+    "type_equipement": "douche",
+    "volume_l": 42.1,
+    "debit_l_min": 7.0,
+    "timestamp": "2026-02-08T08:00:00Z"
+  },
+  {
+    "device_id": "cuisine_01",
+    "type_equipement": "cuisine",
+    "volume_l": 15.6,
+    "debit_l_min": 5.2,
+    "timestamp": "2026-02-08T09:15:00Z"
+  },
+  {
+    "device_id": "lave_linge_01",
+    "type_equipement": "lave_linge",
+    "volume_l": 65.3,
+    "debit_l_min": 3.5,
+    "timestamp": "2026-02-08T10:00:00Z"
+  },
+  {
+    "device_id": "wc_01",
+    "type_equipement": "wc",
+    "volume_l": 5.8,
+    "debit_l_min": 0.0,
+    "timestamp": "2026-02-08T13:45:00Z"
+  },
+  {
+    "device_id": "douche_01",
+    "type_equipement": "douche",
+    "volume_l": 40.5,
+    "debit_l_min": 6.8,
+    "timestamp": "2026-02-08T20:15:00Z"
+  },
+  {
+    "device_id": "wc_01",
+    "type_equipement": "wc",
+    "volume_l": 6.2,
+    "debit_l_min": 0.0,
+    "timestamp": "2026-02-09T08:00:00Z"
+  },
+  {
+    "device_id": "douche_01",
+    "type_equipement": "douche",
+    "volume_l": 48.3,
+    "debit_l_min": 8.0,
+    "timestamp": "2026-02-09T08:20:00Z"
+  },
+  {
+    "device_id": "cuisine_01",
+    "type_equipement": "cuisine",
+    "volume_l": 18.7,
+    "debit_l_min": 6.2,
+    "timestamp": "2026-02-09T11:30:00Z"
+  },
+  {
+    "device_id": "lave_vaisselle_01",
+    "type_equipement": "lave_vaisselle",
+    "volume_l": 16.2,
+    "debit_l_min": 2.7,
+    "timestamp": "2026-02-09T13:00:00Z"
+  },
+  {
+    "device_id": "wc_01",
+    "type_equipement": "wc",
+    "volume_l": 5.5,
+    "debit_l_min": 0.0,
+    "timestamp": "2026-02-09T16:30:00Z"
+  },
+  {
+    "device_id": "douche_01",
+    "type_equipement": "douche",
+    "volume_l": 44.8,
+    "debit_l_min": 7.5,
+    "timestamp": "2026-02-09T19:00:00Z"
+  },
+  {
+    "device_id": "wc_01",
+    "type_equipement": "wc",
+    "volume_l": 6.8,
+    "debit_l_min": 0.0,
+    "timestamp": "2026-02-10T07:45:00Z"
+  },
+  {
+    "device_id": "douche_01",
+    "type_equipement": "douche",
+    "volume_l": 46.5,
+    "debit_l_min": 7.8,
+    "timestamp": "2026-02-10T08:10:00Z"
+  },
+  {
+    "device_id": "cuisine_01",
+    "type_equipement": "cuisine",
+    "volume_l": 14.2,
+    "debit_l_min": 4.7,
+    "timestamp": "2026-02-10T09:30:00Z"
+  },
+  {
+    "device_id": "lave_linge_01",
+    "type_equipement": "lave_linge",
+    "volume_l": 68.5,
+    "debit_l_min": 3.8,
+    "timestamp": "2026-02-10T11:00:00Z"
+  },
+  {
+    "device_id": "wc_01",
+    "type_equipement": "wc",
+    "volume_l": 5.3,
+    "debit_l_min": 0.0,
+    "timestamp": "2026-02-10T14:20:00Z"
+  },
+  {
+    "device_id": "jardin_01",
+    "type_equipement": "jardin",
+    "volume_l": 95.2,
+    "debit_l_min": 6.3,
+    "timestamp": "2026-02-10T18:00:00Z"
+  },
+  {
+    "device_id": "douche_01",
+    "type_equipement": "douche",
+    "volume_l": 41.2,
+    "debit_l_min": 6.9,
+    "timestamp": "2026-02-10T20:30:00Z"
+  },
+  {
+    "device_id": "wc_01",
+    "type_equipement": "wc",
+    "volume_l": 6.1,
+    "debit_l_min": 0.0,
+    "timestamp": "2026-02-11T08:00:00Z"
+  },
+  {
+    "device_id": "douche_01",
+    "type_equipement": "douche",
+    "volume_l": 43.8,
+    "debit_l_min": 7.3,
+    "timestamp": "2026-02-11T08:25:00Z"
+  },
+  {
+    "device_id": "cuisine_01",
+    "type_equipement": "cuisine",
+    "volume_l": 16.5,
+    "debit_l_min": 5.5,
+    "timestamp": "2026-02-11T10:00:00Z"
+  },
+  {
+    "device_id": "lave_vaisselle_01",
+    "type_equipement": "lave_vaisselle",
+    "volume_l": 15.5,
+    "debit_l_min": 2.6,
+    "timestamp": "2026-02-11T12:30:00Z"
+  },
+  {
+    "device_id": "wc_01",
+    "type_equipement": "wc",
+    "volume_l": 5.9,
+    "debit_l_min": 0.0,
+    "timestamp": "2026-02-11T15:45:00Z"
+  },
+  {
+    "device_id": "douche_01",
+    "type_equipement": "douche",
+    "volume_l": 39.5,
+    "debit_l_min": 6.6,
+    "timestamp": "2026-02-11T19:15:00Z"
+  },
+  {
+    "device_id": "wc_01",
+    "type_equipement": "wc",
+    "volume_l": 6.3,
+    "debit_l_min": 0.0,
+    "timestamp": "2026-02-12T07:30:00Z"
+  },
+  {
+    "device_id": "douche_01",
+    "type_equipement": "douche",
+    "volume_l": 47.2,
+    "debit_l_min": 7.9,
+    "timestamp": "2026-02-12T08:00:00Z"
+  },
+  {
+    "device_id": "cuisine_01",
+    "type_equipement": "cuisine",
+    "volume_l": 17.8,
+    "debit_l_min": 5.9,
+    "timestamp": "2026-02-12T09:45:00Z"
+  },
+  {
+    "device_id": "lave_linge_01",
+    "type_equipement": "lave_linge",
+    "volume_l": 70.2,
+    "debit_l_min": 3.9,
+    "timestamp": "2026-02-12T10:30:00Z"
+  },
+  {
+    "device_id": "wc_01",
+    "type_equipement": "wc",
+    "volume_l": 5.6,
+    "debit_l_min": 0.0,
+    "timestamp": "2026-02-12T13:15:00Z"
+  },
+  {
+    "device_id": "lave_vaisselle_01",
+    "type_equipement": "lave_vaisselle",
+    "volume_l": 16.8,
+    "debit_l_min": 2.8,
+    "timestamp": "2026-02-12T14:00:00Z"
+  },
+  {
+    "device_id": "douche_01",
+    "type_equipement": "douche",
+    "volume_l": 45.5,
+    "debit_l_min": 7.6,
+    "timestamp": "2026-02-12T20:00:00Z"
+  },
+  {
+    "device_id": "wc_01",
+    "type_equipement": "wc",
+    "volume_l": 6.0,
+    "debit_l_min": 0.0,
+    "timestamp": "2026-02-13T08:00:00Z"
+  },
+  {
+    "device_id": "douche_01",
+    "type_equipement": "douche",
+    "volume_l": 44.3,
+    "debit_l_min": 7.4,
+    "timestamp": "2026-02-13T08:20:00Z"
+  },
+  {
+    "device_id": "cuisine_01",
+    "type_equipement": "cuisine",
+    "volume_l": 15.2,
+    "debit_l_min": 5.1,
+    "timestamp": "2026-02-13T09:00:00Z"
+  },
+  {
+    "device_id": "lave_vaisselle_01",
+    "type_equipement": "lave_vaisselle",
+    "volume_l": 15.0,
+    "debit_l_min": 2.5,
+    "timestamp": "2026-02-13T11:30:00Z"
+  },
+  {
+    "device_id": "wc_01",
+    "type_equipement": "wc",
+    "volume_l": 5.7,
+    "debit_l_min": 0.0,
+    "timestamp": "2026-02-13T14:00:00Z"
+  },
+  {
+    "device_id": "douche_01",
+    "type_equipement": "douche",
+    "volume_l": 42.8,
+    "debit_l_min": 7.1,
+    "timestamp": "2026-02-13T19:30:00Z"
+  }
+]

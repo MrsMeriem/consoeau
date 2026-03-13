@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Water Monitor</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #050d14;
+        --panel: #0a1a26;
+        --border: #0e2a3d;
+        --accent: #00c8ff;
+        --accent2: #00ff9d;
+        --warn: #ff6b35;
+        --text: #e0f4ff;
+        --muted: #4a7a9b;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "DM Sans", sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Animated background */
+      body::before {
+        content: "";
+        position: fixed;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background:
+          radial-gradient(
+            ellipse at 20% 50%,
+            rgba(0, 200, 255, 0.04) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            ellipse at 80% 20%,
+            rgba(0, 255, 157, 0.03) 0%,
+            transparent 50%
+          );
+        animation: bgPulse 8s ease-in-out infinite alternate;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      @keyframes bgPulse {
+        0% {
+          transform: scale(1) rotate(0deg);
+        }
+        100% {
+          transform: scale(1.1) rotate(2deg);
+        }
+      }
+
+      .container {
+        position: relative;
+        z-index: 1;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 40px 24px;
+      }
+
+      /* Header */
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 48px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .logo-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+      }
+
+      h1 {
+        font-family: "Space Mono", monospace;
+        font-size: 1.4rem;
+        letter-spacing: -0.02em;
+        color: var(--text);
+      }
+
+      h1 span {
+        color: var(--accent);
+      }
+
+      .status-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        padding: 8px 16px;
+        font-size: 0.8rem;
+        font-family: "Space Mono", monospace;
+        color: var(--muted);
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--muted);
+        transition: background 0.3s;
+      }
+
+      .status-dot.active {
+        background: var(--accent2);
+        box-shadow: 0 0 8px var(--accent2);
+        animation: blink 2s infinite;
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+
+      /* Big metrics */
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .metric-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 28px;
+        position: relative;
+        overflow: hidden;
+        transition:
+          border-color 0.3s,
+          transform 0.2s;
+      }
+
+      .metric-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+
+      .metric-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--accent),
+          transparent
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .metric-card:hover::before {
+        opacity: 1;
+      }
+
+      .metric-label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        font-family: "Space Mono", monospace;
+        margin-bottom: 12px;
+      }
+
+      .metric-value {
+        font-family: "Space Mono", monospace;
+        font-size: 2.6rem;
+        font-weight: 700;
+        color: var(--accent);
+        line-height: 1;
+        margin-bottom: 6px;
+        transition: color 0.3s;
+      }
+
+      .metric-value.green {
+        color: var(--accent2);
+      }
+      .metric-value.orange {
+        color: var(--warn);
+      }
+
+      .metric-unit {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      /* Chart area */
+      .chart-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 28px;
+        margin-bottom: 24px;
+      }
+
+      .chart-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+      }
+
+      .chart-title {
+        font-family: "Space Mono", monospace;
+        font-size: 0.85rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .chart-legend {
+        display: flex;
+        gap: 16px;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      .legend-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 6px;
+      }
+
+      canvas {
+        width: 100% !important;
+      }
+
+      /* Table */
+      .table-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+
+      .table-header {
+        padding: 20px 28px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .table-title {
+        font-family: "Space Mono", monospace;
+        font-size: 0.85rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .refresh-btn {
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--muted);
+        padding: 6px 14px;
+        font-size: 0.75rem;
+        font-family: "Space Mono", monospace;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .refresh-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        padding: 12px 28px;
+        text-align: left;
+        font-size: 0.72rem;
+        font-family: "Space Mono", monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        border-bottom: 1px solid var(--border);
+        background: rgba(0, 200, 255, 0.02);
+      }
+
+      td {
+        padding: 14px 28px;
+        font-size: 0.88rem;
+        border-bottom: 1px solid rgba(14, 42, 61, 0.5);
+        color: var(--text);
+        transition: background 0.2s;
+      }
+
+      tr:hover td {
+        background: rgba(0, 200, 255, 0.03);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      .td-mono {
+        font-family: "Space Mono", monospace;
+        color: var(--accent);
+        font-size: 0.82rem;
+      }
+
+      .no-data {
+        text-align: center;
+        padding: 48px;
+        color: var(--muted);
+        font-family: "Space Mono", monospace;
+        font-size: 0.85rem;
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--border);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-right: 8px;
+        vertical-align: middle;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 700px) {
+        .metrics-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .metric-value {
+          font-size: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo">
+          <div class="logo-icon">💧</div>
+          <h1>WATER<span>.</span>MONITOR</h1>
+        </div>
+        <div class="status-badge">
+          <div class="status-dot" id="statusDot"></div>
+          <span id="statusText">Connexion...</span>
+        </div>
+      </header>
+
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-label">Débit actuel</div>
+          <div class="metric-value" id="debit">--</div>
+          <div class="metric-unit">L / min</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Volume total</div>
+          <div class="metric-value green" id="volume">--</div>
+          <div class="metric-unit">Litres</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Entrées reçues</div>
+          <div class="metric-value orange" id="total">--</div>
+          <div class="metric-unit">mesures</div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">Débit en temps réel</div>
+          <div class="chart-legend">
+            <span
+              ><span class="legend-dot" style="background: var(--accent)"></span
+              >Débit L/min</span
+            >
+            <span
+              ><span
+                class="legend-dot"
+                style="background: var(--accent2)"
+              ></span
+              >Volume L</span
+            >
+          </div>
+        </div>
+        <canvas id="chart" height="80"></canvas>
+      </div>
+
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Dernières mesures</div>
+          <button class="refresh-btn" onclick="fetchData()">
+            ↻ Rafraîchir
+          </button>
+        </div>
+        <div id="tableContainer">
+          <div class="no-data">
+            <span class="spinner"></span>En attente de données...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <script>
+      const SERVER = "http://172.20.10.2:5000";
+      let chart = null;
+      let chartLabels = [];
+      let chartDebit = [];
+      let chartVolume = [];
+
+      // Init chart
+      function initChart() {
+        const ctx = document.getElementById("chart").getContext("2d");
+        chart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: chartLabels,
+            datasets: [
+              {
+                label: "Débit (L/min)",
+                data: chartDebit,
+                borderColor: "#00c8ff",
+                backgroundColor: "rgba(0,200,255,0.06)",
+                borderWidth: 2,
+                pointRadius: 2,
+                tension: 0.4,
+                fill: true,
+                yAxisID: "y",
+              },
+              {
+                label: "Volume (L)",
+                data: chartVolume,
+                borderColor: "#00ff9d",
+                backgroundColor: "rgba(0,255,157,0.04)",
+                borderWidth: 2,
+                pointRadius: 2,
+                tension: 0.4,
+                fill: true,
+                yAxisID: "y1",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            animation: { duration: 300 },
+            interaction: { intersect: false, mode: "index" },
+            plugins: { legend: { display: false } },
+            scales: {
+              x: {
+                ticks: {
+                  color: "#4a7a9b",
+                  font: { family: "Space Mono", size: 10 },
+                  maxTicksLimit: 8,
+                },
+                grid: { color: "rgba(14,42,61,0.8)" },
+              },
+              y: {
+                position: "left",
+                ticks: {
+                  color: "#00c8ff",
+                  font: { family: "Space Mono", size: 10 },
+                },
+                grid: { color: "rgba(14,42,61,0.8)" },
+              },
+              y1: {
+                position: "right",
+                ticks: {
+                  color: "#00ff9d",
+                  font: { family: "Space Mono", size: 10 },
+                },
+                grid: { drawOnChartArea: false },
+              },
+            },
+          },
+        });
+      }
+
+      async function fetchData() {
+        try {
+          const res = await fetch(`${SERVER}/data_all`);
+          const data = await res.json();
+
+          // Status
+          document.getElementById("statusDot").classList.add("active");
+          document.getElementById("statusText").textContent = "En ligne";
+
+          if (data.length === 0) {
+            document.getElementById("tableContainer").innerHTML =
+              '<div class="no-data">Aucune donnée reçue pour l\'instant...</div>';
+            return;
+          }
+
+          // Dernière entrée
+          const last = data[data.length - 1];
+          document.getElementById("debit").textContent = parseFloat(
+            last.debit_l_min,
+          ).toFixed(2);
+          document.getElementById("volume").textContent = parseFloat(
+            last.volume_l,
+          ).toFixed(2);
+          document.getElementById("total").textContent = data.length;
+
+          // Graphique — 50 derniers points
+          const recent = data.slice(-50);
+          chartLabels = recent.map((d) => d.timestamp.substring(11, 19));
+          chartDebit = recent.map((d) => parseFloat(d.debit_l_min));
+          chartVolume = recent.map((d) => parseFloat(d.volume_l));
+
+          chart.data.labels = chartLabels;
+          chart.data.datasets[0].data = chartDebit;
+          chart.data.datasets[1].data = chartVolume;
+          chart.update();
+
+          // Tableau — 20 dernières lignes
+          const rows = data
+            .slice(-20)
+            .reverse()
+            .map(
+              (d) => `
+        <tr>
+          <td>${d.timestamp}</td>
+          <td class="td-mono">${parseFloat(d.debit_l_min).toFixed(2)}</td>
+          <td class="td-mono">${parseFloat(d.volume_l).toFixed(2)}</td>
+          <td>${d.device_id}</td>
+          <td>${d.type_equipement}</td>
+        </tr>
+      `,
+            )
+            .join("");
+
+          document.getElementById("tableContainer").innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Débit (L/min)</th>
+              <th>Volume (L)</th>
+              <th>Device</th>
+              <th>Équipement</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+        } catch (e) {
+          document.getElementById("statusDot").classList.remove("active");
+          document.getElementById("statusText").textContent = "Hors ligne";
+          document.getElementById("tableContainer").innerHTML =
+            '<div class="no-data">⚠️ Serveur inaccessible — vérifiez que water_server.py tourne</div>';
+        }
+      }
+
+      initChart();
+      fetchData();
+      setInterval(fetchData, 2000); // Rafraîchissement toutes les 2 secondes
+    </script>
+  </body>
+</html>
