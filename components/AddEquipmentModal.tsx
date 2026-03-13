@@ -77,7 +77,7 @@ const AddEquipmentModal: React.FC<AddEquipmentModalProps> = ({ onClose, onAdd })
                 <ul className="space-y-3">
                   {[
                     "Votre téléphone est connecté au Wi-Fi de l'installation",
-                    "La passerelle ConsoEau est active",
+                    "La passerelle Cons'Eau est active",
                     "Le capteur est sous tension"
                   ].map((text, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm text-blue-800/80 font-medium">
@@ -206,7 +206,7 @@ const AddEquipmentModal: React.FC<AddEquipmentModalProps> = ({ onClose, onAdd })
                <div className="p-6 bg-slate-900 rounded-[28px] text-slate-400 flex items-center gap-4">
                   <Smartphone size={20} className="text-blue-500 shrink-0" />
                   <p className="text-xs font-medium leading-relaxed">
-                    L'équipement sera associé à votre passerelle ConsoEau et synchronisé avec votre dashboard.
+                    L'équipement sera associé à votre passerelle Cons'Eau et synchronisé avec votre dashboard.
                   </p>
                </div>
 

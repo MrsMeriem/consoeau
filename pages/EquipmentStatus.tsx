@@ -50,7 +50,7 @@ const EquipmentStatus: React.FC = () => {
             Statut d'équipement
           </h1>
           <p className="text-slate-400 font-medium tracking-tight">
-            Gestion et santé de votre réseau IoT ConsoEau
+            Gestion et santé de votre réseau IoT Cons'Eau
           </p>
         </div>
         <button
@@ -179,7 +179,7 @@ const EquipmentStatus: React.FC = () => {
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-10">
           <div className="space-y-2">
             <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">
-              Passerelle ConsoEau
+              Passerelle Cons'Eau
             </h4>
             <p className="text-2xl font-black flex items-center gap-3">
               <Wifi className="text-emerald-500" /> OPÉRATIONNELLE

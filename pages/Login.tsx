@@ -71,7 +71,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onDirectLogin, selectedAccountTy
             <div className="bg-blue-600 p-4 rounded-3xl shadow-xl shadow-blue-500/20 mb-4">
               <Droplets size={32} className="text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-white mb-1">ConsoEau</h1>
+            <h1 className="text-3xl font-bold text-white mb-1">Cons'Eau</h1>
             <p className="text-slate-400 text-sm">Portail de gestion intelligent</p>
           </div>
 
@@ -165,7 +165,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onDirectLogin, selectedAccountTy
           </form>
 
           <p className="text-center mt-8 text-[10px] font-medium text-slate-600 uppercase tracking-widest">
-            Système sécurisé • ConsoEau Pro
+            Système sécurisé • Cons'Eau Pro
           </p>
         </div>
       </div>

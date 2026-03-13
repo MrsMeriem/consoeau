@@ -32,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPath, onNavigate, onLogout, is
         <div className="bg-blue-600 p-2.5 rounded-2xl shadow-lg shadow-blue-500/20">
           <Droplets size={24} />
         </div>
-        <span className="text-xl font-black tracking-tight">ConsoEau</span>
+        <span className="text-xl font-black tracking-tight">Cons'Eau</span>
       </div>
 
       <nav className="flex-1 mt-6 px-4 space-y-2">
