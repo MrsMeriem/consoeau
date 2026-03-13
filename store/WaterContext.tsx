@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { Measurement, Alert, Period, EquipmentType, SensorStatus } from '../types';
 import { RAW_JSON_STRING } from '../constants';
 import {
@@ -45,6 +45,7 @@ export const WaterProvider: React.FC<{ children: React.ReactNode; accountType?: 
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [sensors, setSensors] = useState<SensorStatus[]>([]);
   const [threshold, setThresholdState] = useState(300);
+  const thresholdRef = useRef(300);
   const [equipmentThresholds, setEquipmentThresholds] = useState<Record<EquipmentType, number>>(DEFAULT_EQ_THRESHOLDS);
   const [period, setPeriod] = useState<Period>('3J');
   const [selectedEquipment, setSelectedEquipment] = useState('all');
@@ -52,7 +53,7 @@ export const WaterProvider: React.FC<{ children: React.ReactNode; accountType?: 
   // Load initial data — profile-specific
   useEffect(() => {
     const savedThreshold = localStorage.getItem('water_threshold');
-    if (savedThreshold) setThresholdState(parseInt(savedThreshold));
+    if (savedThreshold) { const v = parseInt(savedThreshold); setThresholdState(v); thresholdRef.current = v; }
 
     const savedEqT = localStorage.getItem('water_eq_thresholds');
     if (savedEqT) setEquipmentThresholds(JSON.parse(savedEqT));
@@ -147,6 +148,28 @@ export const WaterProvider: React.FC<{ children: React.ReactNode; accountType?: 
           setSensors(prev => prev.map(s =>
             s.id === 'equipement_test' ? { ...s, status: 'active' } : s
           ));
+
+          // Check threshold alerts on new data
+          const today = new Date().toISOString().split('T')[0];
+          const dayTotal = data
+            .filter(m => m.timestamp.startsWith(today))
+            .reduce((acc, m) => acc + m.volume_l, 0);
+
+          if (dayTotal > thresholdRef.current) {
+            setAlerts(prev => {
+              const alreadyAlerted = prev.some(a => a.type === 'warning' && a.date === today && a.title === 'Seuil Journalier Dépassé');
+              if (alreadyAlerted) return prev;
+              return [{
+                id: Math.random().toString(36).substr(2, 9),
+                type: 'warning',
+                title: 'Seuil Journalier Dépassé',
+                message: `Consommation de ${Math.round(dayTotal)}L supérieure au seuil global (${thresholdRef.current}L).`,
+                time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+                date: today,
+                isRead: false,
+              }, ...prev];
+            });
+          }
         }
       } catch { /* offline */ }
     };
@@ -154,6 +177,45 @@ export const WaterProvider: React.FC<{ children: React.ReactNode; accountType?: 
     const t = setInterval(poll, 2000);
     return () => clearInterval(t);
   }, [accountType]);
+
+  // Check threshold alerts whenever threshold, equipmentThresholds or measurements change
+  useEffect(() => {
+    if (measurements.length === 0) return;
+    const today = new Date().toISOString().split('T')[0];
+    const time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+    setAlerts(prev => {
+      let updated = [...prev];
+
+      // Global daily threshold
+      const dayTotal = measurements
+        .filter(m => m.timestamp.startsWith(today))
+        .reduce((acc, m) => acc + m.volume_l, 0);
+      if (dayTotal > threshold) {
+        const alreadyAlerted = updated.some(a => a.date === today && a.title === 'Seuil Journalier Dépassé');
+        if (!alreadyAlerted) {
+          updated = [{ id: Math.random().toString(36).substr(2, 9), type: 'warning', title: 'Seuil Journalier Dépassé', message: `Consommation de ${Math.round(dayTotal)}L supérieure au seuil global (${threshold}L).`, time, date: today, isRead: false }, ...updated];
+        }
+      }
+
+      // Per-equipment threshold
+      sensors.forEach(sensor => {
+        const eqThreshold = sensor.customThreshold ?? equipmentThresholds[sensor.type] ?? 0;
+        if (eqThreshold <= 0) return;
+        const sensorDayTotal = measurements
+          .filter(m => m.device_id === sensor.id && m.timestamp.startsWith(today))
+          .reduce((acc, m) => acc + m.volume_l, 0);
+        if (sensorDayTotal > eqThreshold) {
+          const alertTitle = `Seuil Dépassé — ${sensor.name}`;
+          if (!updated.some(a => a.date === today && a.title === alertTitle)) {
+            updated = [{ id: Math.random().toString(36).substr(2, 9), type: 'warning', title: alertTitle, message: `Consommation de ${Math.round(sensorDayTotal)}L sur "${sensor.name}" dépasse le seuil de ${eqThreshold}L.`, time, date: today, isRead: false }, ...updated];
+          }
+        }
+      });
+
+      return updated;
+    });
+  }, [threshold, equipmentThresholds, measurements, sensors]);
 
   // Live simulation — add a measurement every 8s for non-testeur profiles
   useEffect(() => {
@@ -186,7 +248,7 @@ export const WaterProvider: React.FC<{ children: React.ReactNode; accountType?: 
     localStorage.setItem('water_sensors', JSON.stringify(sensors));
   }, [threshold, equipmentThresholds, alerts, measurements, sensors]);
 
-  const setThreshold = (val: number) => setThresholdState(val);
+  const setThreshold = (val: number) => { setThresholdState(val); thresholdRef.current = val; };
   const setEquipmentThreshold = (type: EquipmentType, val: number) => setEquipmentThresholds(prev => ({ ...prev, [type]: val }));
 
   const addSensor = (s: SensorStatus) => {

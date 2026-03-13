@@ -4,9 +4,10 @@ import datetime
 import os
 
 # ─── CONFIGURATION ───────────────────────────────────────────
-PORT     = "COM7"            # Port de votre Arduino
+PORT     = "COM9"            # Port de votre Arduino
 BAUD     = 9600              # Vitesse (doit correspondre à Serial.begin())
-FICHIER  = "water_data.csv"  # Nom du fichier de sortie
+# Chemin absolu → fonctionne peu importe d'où on lance le script
+FICHIER  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "water_data.csv")
 # ─────────────────────────────────────────────────────────────
 
 def main():
