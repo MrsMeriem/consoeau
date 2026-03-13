@@ -193,7 +193,7 @@ const Signup: React.FC<SignupProps> = ({ onSignup, onGoBack }) => {
               <div className="bg-blue-500/10 p-6 rounded-3xl border border-blue-500/20 text-center">
                  <ShieldCheck className="mx-auto text-blue-500 mb-4" size={48} />
                  <h4 className="text-white font-black uppercase tracking-widest text-xs">Code d'activation requis</h4>
-                 <p className="text-slate-400 text-[11px] mt-2 font-medium leading-relaxed">Le code se trouve au dos de votre passerelle Cons'Eau ou sur votre guide d'installation.</p>
+                 <p className="text-slate-400 text-[11px] mt-2 font-medium leading-relaxed">Le code se trouve au dos de votre passerelle Cons'eau ou sur votre guide d'installation.</p>
               </div>
               <div className="relative">
                 <Key size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600" />

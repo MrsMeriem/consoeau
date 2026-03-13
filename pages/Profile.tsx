@@ -219,7 +219,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, onLogout }) => {
                </div>
                <p className="text-sm font-medium text-slate-400 leading-relaxed max-w-xl">
                  Vos données de consommation sont cryptées de bout en bout entre vos capteurs et votre portail. 
-                 Cons'Eau respecte strictement le RGPD pour la protection de votre vie privée.
+                 Cons'eau respecte strictement le RGPD pour la protection de votre vie privée.
                </p>
                <div className="pt-4 flex flex-wrap gap-4">
                   <div className="px-5 py-3 bg-white/5 rounded-2xl border border-white/5 flex items-center gap-3">
