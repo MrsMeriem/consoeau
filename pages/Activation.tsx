@@ -55,7 +55,7 @@ const Activation: React.FC<ActivationProps> = ({ onActivate, userEmail }) => {
 
           <form onSubmit={handleActivate} className="space-y-6 text-left">
             <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3 block ml-1">Code d'activation Cons'eau</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3 block ml-1">Code d'activation Cons'Eau</label>
               <div className="relative">
                 <Key size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600" />
                 <input

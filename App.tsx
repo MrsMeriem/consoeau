@@ -192,7 +192,7 @@ const App: React.FC = () => {
             onClick={() => setAuthStatus('signup')}
             className="text-slate-500 hover:text-white transition-all text-xs font-black uppercase tracking-[0.2em] bg-white/5 backdrop-blur-md px-6 py-3 rounded-full border border-white/5"
           >
-            Nouveau sur Cons'eau ? S'inscrire
+            Nouveau sur Cons'Eau ? S'inscrire
           </button>
         </div>
       </div>

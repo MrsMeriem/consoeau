@@ -46,10 +46,10 @@ const CampagnePage: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
           <Heart size={14} /> Campagne de soutien
         </div>
         <h1 className={cn("text-5xl font-black leading-tight", dk ? "text-white" : "text-slate-900")}>
-          Soutenez le développement<br /><span className="text-blue-500">Cons'eau</span>
+          Soutenez le développement<br /><span className="text-blue-500">Cons'Eau</span>
         </h1>
         <p className={cn("text-lg max-w-2xl mx-auto leading-relaxed", dk ? "text-white/70" : "text-slate-600")}>
-          Cons'eau est un projet innovant visant à améliorer la gestion de la consommation d'eau dans les habitations, les entreprises et les bâtiments publics.
+          Cons'Eau est un projet innovant visant à améliorer la gestion de la consommation d'eau dans les habitations, les entreprises et les bâtiments publics.
         </p>
       </motion.div>
 
@@ -62,7 +62,7 @@ const CampagnePage: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
           Cette absence d'information rend difficile la détection des gaspillages ou des fuites.
         </p>
         <p className={cn("leading-relaxed", dk ? "text-white/70" : "text-slate-600")}>
-          Cons'eau propose un capteur connecté installé sur le réseau d'eau, capable de mesurer le débit et de transmettre les données vers une application web de suivi et d'analyse.
+          Cons'Eau propose un capteur connecté installé sur le réseau d'eau, capable de mesurer le débit et de transmettre les données vers une application web de suivi et d'analyse.
         </p>
       </motion.div>
 
@@ -140,7 +140,7 @@ const InfoPage: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
           <Info size={14} /> Documentation
         </div>
         <h1 className={cn("text-5xl font-black", dk ? "text-white" : "text-slate-900")}>
-          Comment fonctionne <span className="text-blue-500">Cons'eau</span> ?
+          Comment fonctionne <span className="text-blue-500">Cons'Eau</span> ?
         </h1>
         <p className={cn("text-lg max-w-2xl mx-auto leading-relaxed", dk ? "text-white/60" : "text-slate-500")}>
           Un système de suivi et d'analyse de la consommation d'eau pour les particuliers, les entreprises et les collectivités.
@@ -267,7 +267,7 @@ const FAQPage: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
           FAQ
         </div>
         <h1 className={cn("text-5xl font-black", dk ? "text-white" : "text-slate-900")}>Questions fréquentes</h1>
-        <p className={cn("text-lg", dk ? "text-white/60" : "text-slate-500")}>Tout ce que vous devez savoir sur Cons'eau</p>
+        <p className={cn("text-lg", dk ? "text-white/60" : "text-slate-500")}>Tout ce que vous devez savoir sur Cons'Eau</p>
       </motion.div>
 
       <div className="space-y-3">
@@ -317,7 +317,7 @@ const AProposPage: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
           <Users size={14} /> À propos
         </div>
         <h1 className={cn("text-5xl font-black", dk ? "text-white" : "text-slate-900")}>
-          Le projet <span className="text-blue-500">Cons'eau</span>
+          Le projet <span className="text-blue-500">Cons'Eau</span>
         </h1>
       </motion.div>
 
@@ -326,10 +326,10 @@ const AProposPage: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
         className={cn("rounded-3xl p-8 border", dk ? "bg-white/5 border-white/10" : "bg-white border-slate-200 shadow-sm")}>
         <h2 className={cn("text-xl font-bold mb-3", dk ? "text-white" : "text-slate-900")}>Notre mission</h2>
         <p className={cn("leading-relaxed mb-3", dk ? "text-white/70" : "text-slate-600")}>
-          Cons'eau est un projet d'innovation développé dans le cadre d'un travail d'ingénierie autour de la gestion durable de l'eau.
+          Cons'Eau est un projet d'innovation développé dans le cadre d'un travail d'ingénierie autour de la gestion durable de l'eau.
           La solution vise à aider les particuliers, les entreprises et les collectivités à mieux comprendre et maîtriser leur consommation d'eau.
         </p>
-        <p className={cn("font-medium mb-3", dk ? "text-white/80" : "text-slate-700")}>En rendant les données accessibles et analysables, Cons'eau permet :</p>
+        <p className={cn("font-medium mb-3", dk ? "text-white/80" : "text-slate-700")}>En rendant les données accessibles et analysables, Cons'Eau permet :</p>
         <div className="grid md:grid-cols-3 gap-3">
           {["De réduire le gaspillage d'eau", "D'améliorer l'efficacité des installations", "De contribuer à une gestion plus durable des ressources"].map((item, i) => (
             <div key={i} className={cn("flex items-start gap-2 p-3 rounded-xl", dk ? "bg-white/5" : "bg-blue-50")}>
@@ -443,7 +443,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnter, darkMode, onToggleDa
             <Droplets className="text-white" size={22} />
           </div>
           <span className={cn("text-2xl font-bold tracking-tight", dk ? "text-white" : "text-slate-900")}>
-            Cons'eau
+            Cons'Eau
           </span>
         </button>
 
