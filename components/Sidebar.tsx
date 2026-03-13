@@ -1,7 +1,7 @@
 
 import React from 'react';
 import {
-  LayoutGrid, Sparkles, Bell, LogOut, Droplets, Wifi, User, RefreshCw, BarChart3
+  LayoutGrid, Sparkles, Bell, LogOut, Droplets, Wifi, User, RefreshCw, BarChart3, ShieldAlert
 } from 'lucide-react';
 import { useWater } from '../store/WaterContext';
 import { UserProfile } from '../types';
@@ -23,6 +23,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPath, onNavigate, onLogout, is
     { id: 'sensors', label: 'Statut d\'équipement', icon: Wifi },
     { id: 'analytics', label: 'Analytique', icon: BarChart3 },
     { id: 'ai', label: 'Conseils IA', icon: Sparkles },
+    { id: 'leaks', label: 'Détection de fuite', icon: ShieldAlert },
     { id: 'alerts', label: 'Alertes', icon: Bell, badge: unreadCount > 0 },
   ];
 

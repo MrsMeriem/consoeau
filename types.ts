@@ -44,6 +44,15 @@ export interface AIAnalysis {
   economyTip: string;
 }
 
+export interface SensorPair {
+  id: string;
+  name: string;
+  amontId: string;   // capteur amont (entrée)
+  avalId: string;    // capteur aval (sortie)
+  tolerance: number; // diff max acceptable en litres
+  createdAt: string;
+}
+
 export interface SensorStatus {
   id: string;
   name: string;

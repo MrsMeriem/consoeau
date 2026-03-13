@@ -12,6 +12,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Activation from './pages/Activation';
 import Analytics from './pages/Analytics';
+import LeakDetection from './pages/LeakDetection';
 import { WaterProvider } from './store/WaterContext';
 import { UserProfile } from './types';
 
@@ -221,6 +222,7 @@ const App: React.FC = () => {
           {currentPage === 'analytics' && <Analytics />}
           {currentPage === 'alerts' && <Alerts />}
           {currentPage === 'ai' && <AIAdvice />}
+          {currentPage === 'leaks' && <LeakDetection />}
           {currentPage === 'profile' && <ProfilePage user={currentUser!} onLogout={handleLogout} />}
         </div>
       </Layout>

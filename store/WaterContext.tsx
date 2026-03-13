@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { Measurement, Alert, Period, EquipmentType, SensorStatus } from '../types';
+import { Measurement, Alert, Period, EquipmentType, SensorStatus, SensorPair } from '../types';
 import { RAW_JSON_STRING } from '../constants';
 import {
   particulierMeasurements, particulierSensors,
@@ -26,6 +26,9 @@ interface WaterContextType {
   markAlertRead: (id: string) => void;
   clearAlerts: () => void;
   resetSystem: () => void;
+  sensorPairs: SensorPair[];
+  addSensorPair: (pair: SensorPair) => void;
+  removeSensorPair: (id: string) => void;
 }
 
 const DEFAULT_EQ_THRESHOLDS: Record<EquipmentType, number> = {
@@ -48,6 +51,9 @@ export const WaterProvider: React.FC<{ children: React.ReactNode; accountType?: 
   const thresholdRef = useRef(300);
   const [equipmentThresholds, setEquipmentThresholds] = useState<Record<EquipmentType, number>>(DEFAULT_EQ_THRESHOLDS);
   const [period, setPeriod] = useState<Period>('3J');
+  const [sensorPairs, setSensorPairs] = useState<SensorPair[]>(() => {
+    try { const s = localStorage.getItem('water_sensor_pairs'); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
   const [selectedEquipment, setSelectedEquipment] = useState('all');
 
   // Load initial data — profile-specific
@@ -217,6 +223,41 @@ export const WaterProvider: React.FC<{ children: React.ReactNode; accountType?: 
     });
   }, [threshold, equipmentThresholds, measurements, sensors]);
 
+  // Check leak alerts for sensor pairs
+  useEffect(() => {
+    if (sensorPairs.length === 0 || measurements.length === 0) return;
+    const today = new Date().toISOString().split('T')[0];
+    const time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+    setAlerts(prev => {
+      let updated = [...prev];
+      sensorPairs.forEach(pair => {
+        const amontTotal = measurements
+          .filter(m => m.device_id === pair.amontId && m.timestamp.startsWith(today))
+          .reduce((acc, m) => acc + m.volume_l, 0);
+        const avalTotal = measurements
+          .filter(m => m.device_id === pair.avalId && m.timestamp.startsWith(today))
+          .reduce((acc, m) => acc + m.volume_l, 0);
+        const diff = Math.max(0, amontTotal - avalTotal);
+        if (amontTotal > 0 && diff > pair.tolerance) {
+          const alertTitle = `Fuite détectée — ${pair.name}`;
+          if (!updated.some(a => a.date === today && a.title === alertTitle)) {
+            const amontSensor = sensors.find(s => s.id === pair.amontId);
+            const avalSensor = sensors.find(s => s.id === pair.avalId);
+            updated = [{
+              id: Math.random().toString(36).substr(2, 9),
+              type: 'danger',
+              title: alertTitle,
+              message: `${diff.toFixed(1)}L non comptabilisés entre "${amontSensor?.name ?? pair.amontId}" (amont: ${amontTotal.toFixed(1)}L) et "${avalSensor?.name ?? pair.avalId}" (aval: ${avalTotal.toFixed(1)}L). Tolérance: ${pair.tolerance}L.`,
+              time, date: today, isRead: false,
+            }, ...updated];
+          }
+        }
+      });
+      return updated;
+    });
+  }, [sensorPairs, measurements, sensors]);
+
   // Live simulation — add a measurement every 8s for non-testeur profiles
   useEffect(() => {
     if (accountType === 'testeur') return;
@@ -327,15 +368,20 @@ export const WaterProvider: React.FC<{ children: React.ReactNode; accountType?: 
 
   const markAlertRead = (id: string) => setAlerts(prev => prev.map(a => a.id === id ? { ...a, isRead: true } : a));
   const clearAlerts = () => setAlerts([]);
-  const resetSystem = () => {
-    localStorage.clear();
-    window.location.reload();
+  const resetSystem = () => { localStorage.clear(); window.location.reload(); };
+
+  const addSensorPair = (pair: SensorPair) => {
+    setSensorPairs(prev => { const next = [...prev, pair]; localStorage.setItem('water_sensor_pairs', JSON.stringify(next)); return next; });
+  };
+  const removeSensorPair = (id: string) => {
+    setSensorPairs(prev => { const next = prev.filter(p => p.id !== id); localStorage.setItem('water_sensor_pairs', JSON.stringify(next)); return next; });
   };
 
   return (
-    <WaterContext.Provider value={{ 
+    <WaterContext.Provider value={{
       measurements, alerts, sensors, threshold, equipmentThresholds, period, selectedEquipment,
-      setPeriod, setThreshold, setEquipmentThreshold, setSelectedEquipment, addMeasurement, addSensor, updateSensor, markAlertRead, clearAlerts, resetSystem
+      setPeriod, setThreshold, setEquipmentThreshold, setSelectedEquipment, addMeasurement, addSensor, updateSensor, markAlertRead, clearAlerts, resetSystem,
+      sensorPairs, addSensorPair, removeSensorPair
     }}>
       {children}
     </WaterContext.Provider>
