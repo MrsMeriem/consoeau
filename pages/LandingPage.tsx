@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Droplets, Sun, Moon, ArrowRight, Activity, Info, Bell,
   Cpu, Wifi, Cloud, ChevronDown, ChevronUp, Users,
-  Zap, Shield, BarChart3, Heart
+  Zap, Shield, BarChart3, Heart, Menu, X
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -29,8 +29,8 @@ const CampagnePage: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
   const dk = darkMode;
   const users = [
     { icon: '🏠', label: 'Particuliers', desc: 'Suivre la consommation domestique, détecter les fuites et réduire la facture d\'eau.' },
-    { icon: '🏢', label: 'Professionnels', desc: 'Analyser la consommation des installations et optimiser l\'utilisation des ressources.' },
-    { icon: '🏛️', label: 'Collectivités', desc: 'Surveiller les bâtiments publics et améliorer la gestion des infrastructures.' },
+    { icon: '🏢', label: 'Professionnels', desc: 'Analyser la consommation des installations, détecter les fuites et optimiser l\'utilisation des ressources.' },
+    { icon: '🏛️', label: 'Collectivités', desc: 'Surveiller les bâtiments publics, détecter les fuites et améliorer la gestion des infrastructures.' },
   ];
   const benefits = [
     { icon: <Activity size={20} />, text: 'Suivi en temps réel' },
@@ -62,7 +62,7 @@ const CampagnePage: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
           Cette absence d'information rend difficile la détection des gaspillages ou des fuites.
         </p>
         <p className={cn("leading-relaxed", dk ? "text-white/70" : "text-slate-600")}>
-          Cons'Eau propose un capteur connecté installé sur le réseau d'eau, capable de mesurer le débit et de transmettre les données vers une application web de suivi et d'analyse.
+          Cons'Eau propose un capteur connecté installé sur le réseau d'eau, capable de mesurer le débit, de détecter les fuites et de transmettre les données vers une application web de suivi et d'analyse.
         </p>
       </motion.div>
 
@@ -346,8 +346,8 @@ const AProposPage: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
             { icon: '🏠', label: 'Particuliers', desc: 'Suivi de la consommation domestique et réduction de la facture.' },
-            { icon: '🏢', label: 'Professionnels', desc: 'Optimisation de la consommation d\'eau dans les entreprises.' },
-            { icon: '🏛️', label: 'Collectivités', desc: 'Gestion et surveillance des bâtiments publics.' },
+            { icon: '🏢', label: 'Professionnels', desc: 'Optimisation de la consommation d\'eau et détection des fuites dans les entreprises.' },
+            { icon: '🏛️', label: 'Collectivités', desc: 'Gestion, surveillance et détection des fuites dans les bâtiments publics.' },
           ].map((u, i) => (
             <div key={i} className={cn(
               "p-6 rounded-3xl border text-center space-y-3",
@@ -402,6 +402,7 @@ const AProposPage: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
 /* ─── LANDING PAGE ─── */
 const LandingPage: React.FC<LandingPageProps> = ({ onEnter, darkMode, onToggleDarkMode }) => {
   const [page, setPage] = useState<Page>('home');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dk = darkMode;
 
   const navLinks: { label: string; page: Page }[] = [
@@ -411,6 +412,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnter, darkMode, onToggleDa
     { label: 'FAQ', page: 'faq' },
     { label: 'À propos', page: 'apropos' },
   ];
+
+  const navigate = (p: Page) => { setPage(p); setMobileMenuOpen(false); };
 
   return (
     <div className={cn(
@@ -433,93 +436,220 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnter, darkMode, onToggleDa
       </div>
 
       {/* Nav */}
-      <nav className="sticky top-0 z-50 px-8 py-5 flex items-center justify-between backdrop-blur-xl border-b"
-        style={{ background: dk ? 'rgba(5,10,24,0.8)' : 'rgba(248,250,252,0.8)', borderColor: dk ? 'rgba(255,255,255,0.08)' : 'rgba(226,232,240,0.8)' }}>
-        <button onClick={() => setPage('home')} className="flex items-center gap-3">
-          <div className={cn(
-            "w-10 h-10 backdrop-blur-md rounded-xl flex items-center justify-center",
-            dk ? "bg-white/20 border border-white/30" : "bg-blue-600 border border-blue-700"
-          )}>
-            <Droplets className="text-white" size={22} />
-          </div>
-          <span className={cn("text-2xl font-bold tracking-tight", dk ? "text-white" : "text-slate-900")}>
-            Cons'Eau
-          </span>
-        </button>
-
-        <div className={cn("hidden md:flex items-center gap-1 font-medium", dk ? "text-white/80" : "text-slate-600")}>
-          {navLinks.map((link) => (
-            <button
-              key={link.page}
-              onClick={() => setPage(link.page)}
-              className={cn(
-                "px-4 py-2 rounded-xl text-sm font-semibold transition-all",
-                page === link.page
-                  ? dk ? "bg-white/15 text-white" : "bg-blue-600 text-white"
-                  : dk ? "hover:bg-white/10 hover:text-white" : "hover:bg-slate-200 hover:text-slate-900"
-              )}
-            >
-              {link.label}
-            </button>
-          ))}
-          <button
-            onClick={onToggleDarkMode}
-            className={cn(
-              "ml-2 p-2 rounded-xl backdrop-blur-md transition-all",
-              dk ? "bg-white/10 border border-white/20 text-white hover:bg-white/20" : "bg-slate-200 border border-slate-300 text-slate-600 hover:bg-slate-300"
-            )}
-          >
-            {dk ? <Sun size={18} /> : <Moon size={18} />}
+      <nav className="sticky top-0 z-50 backdrop-blur-xl border-b"
+        style={{ background: dk ? 'rgba(5,10,24,0.9)' : 'rgba(248,250,252,0.9)', borderColor: dk ? 'rgba(255,255,255,0.08)' : 'rgba(226,232,240,0.8)' }}>
+        <div className="px-4 md:px-8 py-4 flex items-center justify-between">
+          <button onClick={() => navigate('home')} className="flex items-center gap-2.5">
+            <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0", dk ? "bg-white/20 border border-white/30" : "bg-blue-600")}>
+              <Droplets className="text-white" size={20} />
+            </div>
+            <span className={cn("text-xl font-bold tracking-tight", dk ? "text-white" : "text-slate-900")}>Cons'Eau</span>
           </button>
+
+          {/* Desktop nav */}
+          <div className={cn("hidden md:flex items-center gap-1", dk ? "text-white/80" : "text-slate-600")}>
+            {navLinks.map((link) => (
+              <button key={link.page} onClick={() => navigate(link.page)}
+                className={cn("px-3 py-2 rounded-xl text-sm font-semibold transition-all",
+                  page === link.page
+                    ? dk ? "bg-white/15 text-white" : "bg-blue-600 text-white"
+                    : dk ? "hover:bg-white/10 hover:text-white" : "hover:bg-slate-200 hover:text-slate-900"
+                )}>
+                {link.label}
+              </button>
+            ))}
+            <button onClick={onToggleDarkMode}
+              className={cn("ml-2 p-2 rounded-xl transition-all", dk ? "bg-white/10 border border-white/20 text-white hover:bg-white/20" : "bg-slate-200 text-slate-600 hover:bg-slate-300")}>
+              {dk ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+          </div>
+
+          {/* Mobile controls */}
+          <div className="flex md:hidden items-center gap-2">
+            <button onClick={onToggleDarkMode}
+              className={cn("p-2 rounded-xl transition-all", dk ? "bg-white/10 text-white" : "bg-slate-200 text-slate-600")}>
+              {dk ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className={cn("p-2 rounded-xl transition-all", dk ? "bg-white/10 text-white" : "bg-slate-200 text-slate-700")}>
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile menu dropdown */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className={cn("overflow-hidden border-t md:hidden", dk ? "border-white/10 bg-[#050A18]" : "border-slate-200 bg-white")}>
+              <div className="px-4 py-3 space-y-1">
+                {navLinks.map((link) => (
+                  <button key={link.page} onClick={() => navigate(link.page)}
+                    className={cn("w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all",
+                      page === link.page
+                        ? dk ? "bg-blue-600/30 text-white" : "bg-blue-600 text-white"
+                        : dk ? "text-white/70 hover:bg-white/10 hover:text-white" : "text-slate-700 hover:bg-slate-100"
+                    )}>
+                    {link.label}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       {/* Content */}
-      <div className="flex-1 relative z-10">
+      <div className="flex-1 relative z-10 flex flex-col">
         <AnimatePresence mode="wait">
           {page === 'home' && (
             <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
-              className="flex flex-col lg:flex-row items-center justify-center px-8 lg:px-24 gap-12 min-h-[calc(100vh-140px)]">
-              <div className="flex-1 text-center lg:text-left z-10">
-                <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
-                  <div className="flex items-center gap-2 mb-6 justify-center lg:justify-start">
+              className="flex-1 flex flex-col lg:flex-row items-center justify-center px-5 md:px-12 lg:px-24 py-6 lg:py-0 gap-8 lg:gap-12 overflow-hidden lg:overflow-visible">
+
+              {/* Text */}
+              <div className="flex-1 text-center lg:text-left z-10 w-full">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+                  <div className="flex items-center gap-2 mb-4 justify-center lg:justify-start">
                     <div className={cn("w-1.5 h-1.5 rounded-full", dk ? "bg-white" : "bg-blue-500")} />
                     <div className={cn("w-1.5 h-1.5 rounded-full opacity-50", dk ? "bg-white" : "bg-blue-400")} />
                     <div className={cn("w-1.5 h-1.5 rounded-full opacity-25", dk ? "bg-white" : "bg-blue-300")} />
                   </div>
-                  <h1 className={cn("text-6xl lg:text-8xl font-black mb-8 leading-tight tracking-tighter", dk ? "text-white" : "text-slate-900")}>
+                  <h1 className={cn("text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-black mb-5 leading-tight tracking-tighter", dk ? "text-white" : "text-slate-900")}>
                     PRÉSERVEZ<br />VOTRE EAU
                   </h1>
-                  <p className={cn("text-lg max-w-xl mb-12 leading-relaxed font-medium", dk ? "text-white/80" : "text-slate-600")}>
+
+                  {/* Mobile-only water illustration — before buttons */}
+                  <motion.div
+                    className="sm:hidden mt-6 flex justify-center"
+                    initial={{ opacity: 0, scale: 0.85 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.9, delay: 0.3 }}
+                  >
+                    <div className="relative w-64 h-64">
+                      <svg viewBox="0 0 320 320" className="w-full h-full drop-shadow-xl">
+                        <defs>
+                          <radialGradient id="mobileGlowDk" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.25" />
+                            <stop offset="100%" stopColor="#1d4ed8" stopOpacity="0" />
+                          </radialGradient>
+                          <radialGradient id="mobileGlowLt" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stopColor="#93c5fd" stopOpacity="0.4" />
+                            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+                          </radialGradient>
+                          <linearGradient id="dropGradDk" x1="30%" y1="0%" x2="70%" y2="100%">
+                            <stop offset="0%" stopColor="white" stopOpacity="0.95" />
+                            <stop offset="100%" stopColor="#93c5fd" stopOpacity="0.7" />
+                          </linearGradient>
+                          <linearGradient id="dropGradLt" x1="30%" y1="0%" x2="70%" y2="100%">
+                            <stop offset="0%" stopColor="#2563eb" stopOpacity="1" />
+                            <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.8" />
+                          </linearGradient>
+                        </defs>
+
+                        {/* Glow circle */}
+                        <motion.circle cx="160" cy="160" r="130"
+                          fill={dk ? "url(#mobileGlowDk)" : "url(#mobileGlowLt)"}
+                          animate={{ r: [130, 140, 130] }}
+                          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} />
+
+                        {/* Outer ring */}
+                        <motion.circle cx="160" cy="160" r="120"
+                          fill="none"
+                          stroke={dk ? "rgba(255,255,255,0.08)" : "rgba(37,99,235,0.15)"}
+                          strokeWidth="1.5"
+                          animate={{ r: [120, 128, 120] }}
+                          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} />
+
+                        {/* Main drop */}
+                        <motion.path
+                          d="M160 55 C160 55 95 150 95 205 C95 241 124 270 160 270 C196 270 225 241 225 205 C225 150 160 55 160 55 Z"
+                          fill={dk ? "url(#dropGradDk)" : "url(#dropGradLt)"}
+                          initial={{ y: 15, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          transition={{ duration: 1, delay: 0.5 }} />
+
+                        {/* Shine inside drop */}
+                        <motion.ellipse cx="143" cy="145" rx="10" ry="22"
+                          fill="white" opacity={dk ? 0.25 : 0.3}
+                          style={{ transform: 'rotate(-20deg)', transformOrigin: '143px 145px' }}
+                          animate={{ opacity: dk ? [0.25, 0.15, 0.25] : [0.3, 0.18, 0.3] }}
+                          transition={{ duration: 3, repeat: Infinity }} />
+
+                        {/* Small drops floating around — left */}
+                        {[
+                          { cx: 68, cy: 130, rx: 9, ry: 16, delay: 0 },
+                          { cx: 252, cy: 155, rx: 7, ry: 13, delay: 0.6 },
+                          { cx: 100, cy: 245, rx: 6, ry: 11, delay: 1.2 },
+                          { cx: 220, cy: 100, rx: 8, ry: 14, delay: 0.9 },
+                        ].map((d, i) => (
+                          <motion.ellipse key={i}
+                            cx={d.cx} cy={d.cy} rx={d.rx} ry={d.ry}
+                            fill={dk ? "rgba(255,255,255,0.5)" : "rgba(37,99,235,0.35)"}
+                            animate={{ y: [0, -10, 0], opacity: [0.5, 0.9, 0.5] }}
+                            transition={{ duration: 3 + i * 0.5, repeat: Infinity, delay: d.delay, ease: "easeInOut" }} />
+                        ))}
+
+                        {/* Rising bubbles */}
+                        {[0, 1, 2, 3, 4].map((i) => (
+                          <motion.circle key={`b${i}`}
+                            cx={110 + (i * 23) % 100}
+                            cy={260}
+                            r={4 + (i * 2) % 7}
+                            fill={dk ? "rgba(255,255,255,0.3)" : "rgba(96,165,250,0.4)"}
+                            animate={{ y: [0, -(80 + (i * 30) % 80)], opacity: [0.5, 0], scale: [1, 1.6] }}
+                            transition={{ duration: 2.5 + i * 0.6, repeat: Infinity, delay: i * 0.5, ease: "easeOut" }} />
+                        ))}
+                      </svg>
+
+                      {/* Floating badge — top right */}
+                      <motion.div
+                        animate={{ y: [0, -10, 0] }}
+                        transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+                        className={cn("absolute -top-2 -right-2 w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl backdrop-blur-xl",
+                          dk ? "bg-white/15 border border-white/25" : "bg-blue-50 border border-blue-200")}
+                      >
+                        <Droplets size={22} className={dk ? "text-white" : "text-blue-600"} />
+                      </motion.div>
+
+                      {/* Floating badge — bottom left */}
+                      <motion.div
+                        animate={{ y: [0, 10, 0] }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                        className={cn("absolute -bottom-2 -left-2 w-16 h-16 rounded-[22px] flex flex-col items-center justify-center shadow-xl backdrop-blur-xl gap-1 px-2",
+                          dk ? "bg-white/15 border border-white/25" : "bg-white border border-blue-100 shadow-blue-100")}
+                      >
+                        <Activity size={16} className={dk ? "text-white" : "text-blue-500"} />
+                        <div className={cn("w-8 h-1 rounded-full overflow-hidden", dk ? "bg-white/20" : "bg-blue-100")}>
+                          <motion.div className={cn("h-full rounded-full", dk ? "bg-white" : "bg-blue-500")}
+                            animate={{ width: ["20%", "85%", "40%", "95%"] }}
+                            transition={{ duration: 3.5, repeat: Infinity }} />
+                        </div>
+                      </motion.div>
+                    </div>
+                  </motion.div>
+
+                  <p className={cn("text-sm sm:text-base lg:text-lg max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed", dk ? "text-white/80" : "text-slate-600")}>
                     Prenez le contrôle de votre consommation hydrique avec notre technologie IoT de pointe. Économisez de l'argent, sauvez la planète, goutte après goutte.
                   </p>
-                  <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
-                    <button
-                      onClick={() => onEnter()}
-                      className="px-10 py-5 bg-blue-600 text-white font-bold rounded-2xl shadow-2xl hover:scale-105 transition-transform flex items-center gap-3"
-                    >
-                      Commencer <ArrowRight size={20} />
+                  <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
+                    <button onClick={() => onEnter()}
+                      className="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-2xl hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-3 text-sm">
+                      Commencer <ArrowRight size={18} />
                     </button>
-                    <button
-                      onClick={() => setPage('campagne')}
-                      className={cn(
-                        "px-10 py-5 backdrop-blur-xl font-bold rounded-2xl transition-all",
-                        dk ? "bg-white/10 border border-white/20 text-white hover:bg-white/20" : "bg-white border border-slate-300 text-slate-900 hover:bg-slate-50 hover:border-blue-300"
-                      )}
-                    >
+                    <button onClick={() => navigate('campagne')}
+                      className={cn("w-full sm:w-auto px-8 py-4 backdrop-blur-xl font-bold rounded-2xl transition-all text-sm",
+                        dk ? "bg-white/10 border border-white/20 text-white hover:bg-white/20" : "bg-white border border-slate-300 text-slate-900 hover:bg-slate-50")}>
                       En savoir plus
                     </button>
                   </div>
                 </motion.div>
               </div>
 
-              <div className="flex-1 relative z-10 flex justify-center">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 1, delay: 0.2 }}
-                  className="relative w-full max-w-lg aspect-square"
-                >
+              {/* Visual — hidden on small mobile, smaller on md */}
+              <div className="hidden sm:flex flex-1 relative z-10 justify-center">
+                <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.2 }}
+                  className="relative w-full max-w-[280px] md:max-w-sm lg:max-w-lg aspect-square">
                   <svg viewBox="0 0 500 500" className="w-full h-full drop-shadow-2xl">
                     <defs>
                       <linearGradient id="waterGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -539,22 +669,21 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnter, darkMode, onToggleDa
                       fill={dk ? "white" : "#2563eb"}
                       initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 1, delay: 0.5 }} />
                     {[...Array(5)].map((_, i) => (
-                      <motion.circle key={i}
-                        cx={150 + (i * 47) % 200} cy={350 + (i * 31) % 100} r={5 + (i * 3) % 10}
+                      <motion.circle key={i} cx={150 + (i * 47) % 200} cy={350 + (i * 31) % 100} r={5 + (i * 3) % 10}
                         fill={dk ? "white" : "#93c5fd"} opacity="0.4"
                         animate={{ y: [0, -100 - (i * 37) % 100], opacity: [0.4, 0], scale: [1, 1.5] }}
                         transition={{ duration: 3 + (i * 0.7), repeat: Infinity, delay: i * 0.4, ease: "easeOut" }} />
                     ))}
                   </svg>
-                  <motion.div animate={{ y: [0, -20, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                    className={cn("absolute -top-4 -right-4 w-24 h-24 backdrop-blur-xl rounded-3xl flex items-center justify-center shadow-2xl",
-                      dk ? "bg-white/20 border border-white/30" : "bg-blue-50 border border-blue-200 shadow-blue-100")}>
-                    <Droplets className={dk ? "text-white" : "text-blue-600"} size={40} />
+                  <motion.div animate={{ y: [0, -15, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    className={cn("absolute -top-3 -right-3 w-16 h-16 md:w-20 md:h-20 backdrop-blur-xl rounded-2xl flex items-center justify-center shadow-2xl",
+                      dk ? "bg-white/20 border border-white/30" : "bg-blue-50 border border-blue-200")}>
+                    <Droplets className={dk ? "text-white" : "text-blue-600"} size={28} />
                   </motion.div>
-                  <motion.div animate={{ y: [0, 20, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                    className={cn("absolute -bottom-4 -left-4 w-32 h-32 backdrop-blur-xl rounded-[40px] flex flex-col items-center justify-center shadow-2xl p-4",
-                      dk ? "bg-white/20 border border-white/30" : "bg-white border border-blue-200 shadow-blue-100")}>
-                    <Activity className={cn("mb-2", dk ? "text-white" : "text-blue-600")} size={32} />
+                  <motion.div animate={{ y: [0, 15, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                    className={cn("absolute -bottom-3 -left-3 w-20 h-20 md:w-28 md:h-28 backdrop-blur-xl rounded-[30px] flex flex-col items-center justify-center shadow-2xl p-3",
+                      dk ? "bg-white/20 border border-white/30" : "bg-white border border-blue-200")}>
+                    <Activity className={cn("mb-1.5", dk ? "text-white" : "text-blue-600")} size={24} />
                     <div className={cn("w-full h-1.5 rounded-full overflow-hidden", dk ? "bg-white/20" : "bg-blue-100")}>
                       <motion.div className={cn("h-full", dk ? "bg-white" : "bg-blue-500")}
                         animate={{ width: ["20%", "80%", "40%", "90%"] }} transition={{ duration: 4, repeat: Infinity }} />
@@ -589,13 +718,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnter, darkMode, onToggleDa
       </div>
 
       {/* Footer */}
-      <footer className={cn("px-8 py-6 flex items-center justify-between relative z-10 border-t",
+      <footer className={cn("px-5 md:px-8 py-5 flex flex-col sm:flex-row items-center gap-3 justify-between relative z-10 border-t",
         dk ? "border-white/10" : "border-slate-200")}>
-        <div className={cn("flex items-center gap-4", dk ? "text-white/40" : "text-slate-400")}>
+        <div className={cn("flex flex-wrap items-center justify-center gap-3 sm:gap-4", dk ? "text-white/40" : "text-slate-400")}>
           {navLinks.filter(l => l.page !== 'home').map((link) => (
-            <button key={link.page} onClick={() => setPage(link.page)}
-              className={cn("text-xs font-medium transition-colors",
-                dk ? "hover:text-white/70" : "hover:text-slate-600")}>
+            <button key={link.page} onClick={() => navigate(link.page)}
+              className={cn("text-xs font-medium transition-colors", dk ? "hover:text-white/70" : "hover:text-slate-600")}>
               {link.label}
             </button>
           ))}
