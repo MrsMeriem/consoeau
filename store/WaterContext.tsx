@@ -26,6 +26,8 @@ interface WaterContextType {
   markAlertRead: (id: string) => void;
   clearAlerts: () => void;
   resetSystem: () => void;
+  resetDisplay: () => void;
+  isTesteur: boolean;
   sensorPairs: SensorPair[];
   addSensorPair: (pair: SensorPair) => void;
   removeSensorPair: (id: string) => void;
@@ -45,6 +47,8 @@ const WaterContext = createContext<WaterContextType | undefined>(undefined);
 
 export const WaterProvider: React.FC<{ children: React.ReactNode; accountType?: string }> = ({ children, accountType = 'particulier' }) => {
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
+  const testeurStartTimeRef = useRef<string | null>(null);
+  const forceRefreshRef = useRef(false);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [sensors, setSensors] = useState<SensorStatus[]>([]);
   const [threshold, setThresholdState] = useState(300);
@@ -148,9 +152,13 @@ export const WaterProvider: React.FC<{ children: React.ReactNode; accountType?: 
         const res = await fetch('/water-local/measurements.json');
         if (!res.ok) return;
         const data: Measurement[] = await res.json();
-        if (data.length !== lastCount) {
+        if (data.length !== lastCount || forceRefreshRef.current) {
           lastCount = data.length;
-          setMeasurements(data);
+          forceRefreshRef.current = false;
+          const filtered = testeurStartTimeRef.current
+            ? data.filter(m => m.timestamp >= testeurStartTimeRef.current!)
+            : data;
+          setMeasurements(filtered);
           setSensors(prev => prev.map(s =>
             s.id === 'equipement_test' ? { ...s, status: 'active' } : s
           ));
@@ -369,6 +377,15 @@ export const WaterProvider: React.FC<{ children: React.ReactNode; accountType?: 
   const markAlertRead = (id: string) => setAlerts(prev => prev.map(a => a.id === id ? { ...a, isRead: true } : a));
   const clearAlerts = () => setAlerts([]);
   const resetSystem = () => { localStorage.clear(); window.location.reload(); };
+  const resetDisplay = () => {
+    const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, '0');
+    testeurStartTimeRef.current = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
+    forceRefreshRef.current = true;
+    setMeasurements([]);
+    setAlerts([]);
+  };
 
   const addSensorPair = (pair: SensorPair) => {
     setSensorPairs(prev => { const next = [...prev, pair]; localStorage.setItem('water_sensor_pairs', JSON.stringify(next)); return next; });
@@ -380,7 +397,8 @@ export const WaterProvider: React.FC<{ children: React.ReactNode; accountType?: 
   return (
     <WaterContext.Provider value={{
       measurements, alerts, sensors, threshold, equipmentThresholds, period, selectedEquipment,
-      setPeriod, setThreshold, setEquipmentThreshold, setSelectedEquipment, addMeasurement, addSensor, updateSensor, markAlertRead, clearAlerts, resetSystem,
+      setPeriod, setThreshold, setEquipmentThreshold, setSelectedEquipment, addMeasurement, addSensor, updateSensor, markAlertRead, clearAlerts, resetSystem, resetDisplay,
+      isTesteur: accountType === 'testeur',
       sensorPairs, addSensorPair, removeSensorPair
     }}>
       {children}

@@ -227,7 +227,7 @@ const Analytics: React.FC = () => {
                     <span className="text-base font-black text-slate-900">{b.vol}</span>
                     <span className="text-[10px] text-slate-400 ml-1">L</span>
                   </td>
-                  <td className="py-6 px-6 font-bold text-slate-600">{b.avgDebit} <span className="text-[10px] text-slate-400">L/min</span></td>
+                  <td className="py-6 px-6 font-bold text-slate-600">{b.avgDebit.toFixed(1)} <span className="text-[10px] text-slate-400">L/min</span></td>
                   <td className="py-6 px-6">
                     <span className={`text-[11px] font-black px-3 py-1.5 rounded-xl border block w-fit ${
                       b.isOver ? 'bg-rose-50 border-rose-200 text-rose-600' : 'bg-slate-50 border-slate-100 text-slate-500'

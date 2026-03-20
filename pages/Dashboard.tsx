@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   Droplets,
   BarChart3,
@@ -6,6 +6,9 @@ import {
   Calendar,
   Check,
   ShieldCheck,
+  RotateCcw,
+  Play,
+  Square,
 } from "lucide-react";
 import {
   AreaChart,
@@ -34,6 +37,48 @@ const COLORS = [
   "#94a3b8", // Autre (Slate)
 ];
 
+const LoggerButton: React.FC = () => {
+  const [running, setRunning] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const checkStatus = () => {
+      fetch('/water-local/logger/status')
+        .then(r => r.json())
+        .then(d => { setRunning(d.running); if (d.error) setError(d.error); })
+        .catch(() => {});
+    };
+    checkStatus();
+    const t = setInterval(checkStatus, 3000);
+    return () => clearInterval(t);
+  }, []);
+
+  const toggle = async () => {
+    setError(null);
+    const url = running ? '/water-local/logger/stop' : '/water-local/logger/start';
+    const d = await fetch(url).then(r => r.json()).catch(() => ({ status: 'error' }));
+    if (d.status !== 'error') setRunning(!running);
+  };
+
+  return (
+    <div className="flex flex-col items-end gap-1">
+      <button onClick={toggle} className={`flex items-center gap-2 px-5 py-3 rounded-[18px] text-[11px] font-black uppercase tracking-widest border transition-all ${
+        running
+          ? 'bg-rose-50 text-rose-500 border-rose-100 hover:bg-rose-100'
+          : 'bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100'
+      }`}>
+        {running ? <Square size={13} /> : <Play size={13} />}
+        {running ? 'Arrêter logger' : 'Démarrer logger'}
+      </button>
+      {error && (
+        <span className="text-[10px] font-bold text-rose-500 max-w-[240px] text-right leading-tight px-1">
+          ⚠ {error}
+        </span>
+      )}
+    </div>
+  );
+};
+
 const Dashboard: React.FC = () => {
   const [tarifMode, setTarifMode] = useState<'reference' | 'perso'>('reference');
   const [customTarif, setCustomTarif] = useState(4.34);
@@ -47,6 +92,8 @@ const Dashboard: React.FC = () => {
     setThreshold,
     selectedEquipment,
     setSelectedEquipment,
+    resetDisplay,
+    isTesteur,
   } = useWater();
 
   const equipmentOptions = sensors.map(s => ({ key: s.id, label: s.name }));
@@ -79,6 +126,9 @@ const Dashboard: React.FC = () => {
     });
 
     const totalL = filtered.reduce((acc, m) => acc + m.volume_l, 0);
+    const avgDebit = filtered.length > 0
+      ? filtered.reduce((acc, m) => acc + m.debit_l_min, 0) / filtered.length
+      : 0;
     const effectivePricePerL = (tarifMode === 'perso' ? customTarif : WATER_PRICE_PER_M3) / 1000;
     const totalCost = totalL * effectivePricePerL;
 
@@ -119,11 +169,12 @@ const Dashboard: React.FC = () => {
       }
     }
 
-    return { totalL, totalCost, breakdown, dailyGraph, referenceDate };
+    return { totalL, avgDebit, totalCost, breakdown, dailyGraph, referenceDate };
   }, [measurements, sensors, period, selectedEquipment, tarifMode, customTarif]);
 
   if (!stats) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4 text-center">
+      {isTesteur && <LoggerButton />}
       <div className="p-5 bg-blue-50 rounded-[28px]">
         <Droplets size={40} className="text-blue-400" />
       </div>
@@ -153,20 +204,37 @@ const Dashboard: React.FC = () => {
             Simulation IA active
           </p>
         </div>
-        <div className="flex p-1.5 bg-white rounded-[22px] shadow-sm border border-slate-100 backdrop-blur-xl">
-          {(["1MN", "1H", "1J", "3J", "1S"] as const).map((p) => (
-            <button
-              key={p}
-              onClick={() => setPeriod(p)}
-              className={`px-6 py-3 rounded-[18px] text-[11px] font-black uppercase tracking-widest transition-all ${
-                period === p
-                  ? "bg-slate-900 text-white shadow-xl"
-                  : "text-slate-400 hover:text-slate-900"
-              }`}
-            >
-              {p}
-            </button>
-          ))}
+        <div className="flex items-center gap-3">
+          {isTesteur && (
+            <>
+              <LoggerButton />
+              <button
+                onClick={async () => {
+                  await fetch('/water-local/logger/clear-csv');
+                  resetDisplay();
+                }}
+                className="flex items-center gap-2 px-5 py-3 rounded-[18px] text-[11px] font-black uppercase tracking-widest bg-rose-50 text-rose-500 border border-rose-100 hover:bg-rose-100 transition-all"
+              >
+                <RotateCcw size={13} />
+                Réinitialiser
+              </button>
+            </>
+          )}
+          <div className="flex p-1.5 bg-white rounded-[22px] shadow-sm border border-slate-100 backdrop-blur-xl">
+            {(["1MN", "1H", "1J", "3J", "1S"] as const).map((p) => (
+              <button
+                key={p}
+                onClick={() => setPeriod(p)}
+                className={`px-6 py-3 rounded-[18px] text-[11px] font-black uppercase tracking-widest transition-all ${
+                  period === p
+                    ? "bg-slate-900 text-white shadow-xl"
+                    : "text-slate-400 hover:text-slate-900"
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -174,18 +242,18 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <KPICard
           title="Volume total"
-          value={Math.round(stats.totalL)}
+          value={stats.totalL.toFixed(1)}
           unit="Litres"
           icon={Droplets}
         />
         <KPICard
           title="Consommation moyenne"
           value={
-            period === "1MN" ? (stats.totalL / 60).toFixed(3) :
-            period === "1H"  ? stats.totalL.toFixed(2) :
-            Math.round(stats.totalL / (period === "1J" ? 1 : period === "3J" ? 3 : 7))
+            period === "1MN" ? stats.avgDebit.toFixed(1) :
+            period === "1H"  ? stats.avgDebit.toFixed(1) :
+            (stats.totalL / (period === "1J" ? 1 : period === "3J" ? 3 : 7)).toFixed(1)
           }
-          unit={period === "1MN" ? "L / s" : period === "1H" ? "L / h" : "L / Jour"}
+          unit={period === "1MN" || period === "1H" ? "L / min" : "L / Jour"}
           icon={BarChart3}
           color="indigo"
         />

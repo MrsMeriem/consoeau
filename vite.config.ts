@@ -1,7 +1,11 @@
 import path from "path";
 import fs from "fs";
+import { spawn, ChildProcess } from "child_process";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
+
+let loggerProcess: ChildProcess | null = null;
+let loggerError: string | null = null;
 
 const WATER_JSON = path.resolve(".", "water-test-data", "water_data.json");
 const WATER_CSV = path.resolve(".", "water-test-data", "water_data.csv");
@@ -12,6 +16,7 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3001,
       host: "0.0.0.0",
+      allowedHosts: true,
       proxy: {
         "/water-api": {
           target: "http://localhost:5000",
@@ -61,6 +66,59 @@ export default defineConfig(({ mode }) => {
               }
             },
           );
+
+          // Logger start/stop
+          server.middlewares.use("/water-local/logger/start", (_req, res) => {
+            if (loggerProcess) {
+              res.setHeader("Content-Type", "application/json");
+              res.end(JSON.stringify({ status: "already_running" }));
+              return;
+            }
+            loggerError = null;
+            const scriptPath = path.resolve(".", "water-test-data", "water_logger.py");
+            loggerProcess = spawn("python", [scriptPath], { stdio: "pipe" });
+            loggerProcess.stderr?.on("data", (d: Buffer) => {
+              loggerError = d.toString().trim();
+            });
+            loggerProcess.stdout?.on("data", (d: Buffer) => {
+              const txt = d.toString();
+              if (txt.includes("ERREUR") || txt.includes("Impossible")) loggerError = txt.trim();
+            });
+            loggerProcess.on("exit", (code) => {
+              if (code !== 0 && !loggerError) loggerError = `Le logger s'est arrêté (code ${code})`;
+              loggerProcess = null;
+            });
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ status: "started" }));
+          });
+
+          server.middlewares.use("/water-local/logger/stop", (_req, res) => {
+            if (loggerProcess) {
+              loggerProcess.kill();
+              loggerProcess = null;
+            }
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ status: "stopped" }));
+          });
+
+          server.middlewares.use("/water-local/logger/clear-csv", (_req, res) => {
+            try {
+              // Stop logger if running before clearing
+              if (loggerProcess) { loggerProcess.kill(); loggerProcess = null; }
+              loggerError = null;
+              fs.writeFileSync(WATER_CSV, "Horodatage;Temps_ms;Debit_L_min;Total_L\n", "utf-8");
+              res.setHeader("Content-Type", "application/json");
+              res.end(JSON.stringify({ status: "cleared" }));
+            } catch (e: any) {
+              res.statusCode = 500;
+              res.end(JSON.stringify({ status: "error", message: e.message }));
+            }
+          });
+
+          server.middlewares.use("/water-local/logger/status", (_req, res) => {
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ running: loggerProcess !== null, error: loggerError }));
+          });
 
           server.middlewares.use("/water-local/data.json", (_req, res) => {
             try {
